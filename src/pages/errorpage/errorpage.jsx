@@ -1,205 +1,95 @@
-import React, { useEffect, useRef } from 'react';
-import { Link } from 'react-router';
+import React from 'react';
 
-const ErrorPage = () => {
-  const canvasRef = useRef(null);
+const booksData = [
+    {
+        name: "The Great Gatsby",
+        value: 192,
+        color: "#3b82f6",     // Blue
+    },
+    {
+        name: "To Kill a Mockingbird",
+        value: 281,
+        color: "#14b8a5",     // Teal/Green
+    },
+    {
+        name: "1984",
+        value: 328,
+        color: "#fbbf24",     // Yellow/Orange
+    },
+    {
+        name: "The Alchemist",
+        value: 177,
+        color: "#f97316",     // Orange
+    },
+    {
+        name: "Pride and Prejudice",
+        value: 279,
+        color: "#ef4444",     // Red
+    },
+];
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
+const BookPopularityChart = () => {
+    const maxValue = Math.max(...booksData.map(book => book.value));
 
-    const particles = Array.from({ length: 60 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 1.5 + 0.5,
-      dx: (Math.random() - 0.5) * 0.4,
-      dy: (Math.random() - 0.5) * 0.4,
-      alpha: Math.random() * 0.4 + 0.1,
-    }));
+    return (
+        <div className="bg-white rounded-3xl p-10 shadow-sm max-w-5xl mx-auto">
+            <div className="relative h-[420px] flex items-end justify-between px-4">
+                {/* Y-axis labels */}
+                <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-right pr-6 text-sm text-gray-400">
+                    <div>340</div>
+                    <div>255</div>
+                    <div>170</div>
+                    <div>85</div>
+                    <div>00</div>
+                </div>
 
-    let animId;
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(180, 120, 255, ${p.alpha})`;
-        ctx.fill();
-        p.x += p.dx;
-        p.y += p.dy;
-        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
-      });
-      animId = requestAnimationFrame(draw);
-    };
-    draw();
-    return () => cancelAnimationFrame(animId);
-  }, []);
+                {/* Spikes */}
+                <div className="flex-1 flex justify-around items-end gap-12 relative h-full">
+                    {booksData.map((book, index) => {
+                        const heightPercentage = (book.value / maxValue) * 100;
 
-  const styles = {
-    wrapper: {
-      minHeight: '100vh',
-      background: '#0a0a0f',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: "'Georgia', serif",
-      position: 'relative',
-      overflow: 'hidden',
-    },
-    canvas: {
-      position: 'absolute',
-      inset: 0,
-      width: '100%',
-      height: '100%',
-      pointerEvents: 'none',
-    },
-    glow: {
-      position: 'absolute',
-      width: 520,
-      height: 520,
-      borderRadius: '50%',
-      background: 'radial-gradient(circle, rgba(120,60,220,0.18) 0%, transparent 70%)',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -60%)',
-      pointerEvents: 'none',
-    },
-    card: {
-      position: 'relative',
-      zIndex: 2,
-      textAlign: 'center',
-      padding: '3.5rem 3rem 3rem',
-      maxWidth: 480,
-      width: '90%',
-      border: '0.5px solid rgba(160, 100, 255, 0.25)',
-      borderRadius: 20,
-      background: 'rgba(255,255,255,0.03)',
-      backdropFilter: 'blur(12px)',
-    },
-    codeRow: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: 14,
-      marginBottom: '1.5rem',
-    },
-    divider: {
-      width: 1,
-      height: 40,
-      background: 'rgba(160,100,255,0.35)',
-    },
-    code: {
-      fontSize: 52,
-      fontWeight: 700,
-      color: '#c084fc',
-      letterSpacing: '-2px',
-      lineHeight: 1,
-      fontFamily: "'Georgia', serif",
-    },
-    label: {
-      fontSize: 13,
-      color: 'rgba(200,180,255,0.5)',
-      letterSpacing: '0.12em',
-      textTransform: 'uppercase',
-      fontFamily: "'Helvetica Neue', sans-serif",
-      lineHeight: 1.4,
-      textAlign: 'left',
-    },
-    title: {
-      fontSize: 22,
-      fontWeight: 500,
-      color: '#f0e8ff',
-      marginBottom: '0.75rem',
-      letterSpacing: '-0.3px',
-    },
-    desc: {
-      fontSize: 15,
-      color: 'rgba(220,200,255,0.5)',
-      lineHeight: 1.7,
-      fontFamily: "'Helvetica Neue', sans-serif",
-      marginBottom: '2.5rem',
-    },
-    btnRow: {
-      display: 'flex',
-      gap: 12,
-      justifyContent: 'center',
-    },
-    btnPrimary: {
-      padding: '10px 24px',
-      borderRadius: 10,
-      border: 'none',
-      background: '#7c3aed',
-      color: '#fff',
-      fontSize: 14,
-      fontFamily: "'Helvetica Neue', sans-serif",
-      cursor: 'pointer',
-      letterSpacing: '0.01em',
-      transition: 'background 0.2s',
-    },
-    btnSecondary: {
-      padding: '10px 24px',
-      borderRadius: 10,
-      border: '0.5px solid rgba(160,100,255,0.35)',
-      background: 'transparent',
-      color: 'rgba(200,180,255,0.7)',
-      fontSize: 14,
-      fontFamily: "'Helvetica Neue', sans-serif",
-      cursor: 'pointer',
-      letterSpacing: '0.01em',
-    },
-    footer: {
-      marginTop: '2.5rem',
-      fontSize: 12,
-      color: 'rgba(200,180,255,0.25)',
-      fontFamily: "'Helvetica Neue', sans-serif",
-      letterSpacing: '0.05em',
-    },
-  };
+                        return (
+                            <div key={index} className="flex flex-col items-center relative w-20">
+                                {/* Value Label */}
+                                <div 
+                                    className="absolute -top-8 font-semibold text-lg"
+                                    style={{ color: book.color }}
+                                >
+                                    {book.value}
+                                </div>
 
-  return (
-    <div style={styles.wrapper}>
-      <canvas ref={canvasRef} style={styles.canvas} />
-      <div style={styles.glow} />
-      <div style={styles.card}>
-        <div style={styles.codeRow}>
-          <span style={styles.code}>404</span>
-          <div style={styles.divider} />
-          <div style={styles.label}>
-            Page<br />Not Found
-          </div>
+                                {/* Spike */}
+                                <div 
+                                    className="w-20 rounded-t-3xl transition-all duration-700 hover:scale-105"
+                                    style={{
+                                        height: `${heightPercentage}%`,
+                                        background: `linear-gradient(to top, ${book.color}, ${book.color}cc)`,
+                                        minHeight: '40px',
+                                    }}
+                                />
+
+                                {/* Book Name */}
+                                <div className="text-center mt-6 text-sm font-medium text-gray-700 leading-tight w-28">
+                                    {book.name}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* Subtle grid lines */}
+            <div className="relative -mt-80 h-[380px] pointer-events-none">
+                {[85, 170, 255, 340].map((val, i) => (
+                    <div 
+                        key={i}
+                        className="absolute w-full border-t border-dashed border-gray-200"
+                        style={{ bottom: `${(val / 340) * 100}%` }}
+                    />
+                ))}
+            </div>
         </div>
-
-        <h1 style={styles.title}>You've wandered off the map</h1>
-        <p style={styles.desc}>
-          The page you're looking for doesn't exist or has been moved.
-          Let's get you back somewhere familiar.
-        </p>
-
-        <div style={styles.btnRow}>
-          <button
-            style={styles.btnPrimary}
-            onClick={() => window.history.back()}
-            onMouseEnter={e => (e.target.style.background = '#6d28d9')}
-            onMouseLeave={e => (e.target.style.background = '#7c3aed')}
-          >
-            Go Back
-          </button>
-          <button
-            style={styles.btnSecondary}
-            onClick={() => (window.location.href = '/')}
-          >
-            Home
-          </button>
-        </div>
-
-        <p style={styles.footer}>error · ref #404 · null</p>
-      </div>
-    </div>
-  );
+    );
 };
 
-export default ErrorPage;
+export default BookPopularityChart;
