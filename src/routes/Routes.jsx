@@ -24,7 +24,7 @@ export const router = createBrowserRouter([
       {
         path: "/bookDetails/:bookId",     // ← Fixed: changed :id to :bookId
         element: <BookDetails />          // ← Use 'element' (not Component)
-      }
+      },
     ]
   }
 ]);
